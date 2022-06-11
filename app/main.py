@@ -80,7 +80,6 @@ def get_codes_class(text, term_to_code, code_to_term, triee, ngram_depth = 7, si
 
         # A map to check whether a word has already been included in the Classification
         done = {}
-
         # Generate N-Grams from ngram_depth to 1
         for i in range(ngram_depth, 0, -1):
             text_temp_ = list(ngrams(tokens, i))
@@ -105,9 +104,8 @@ def get_codes_class(text, term_to_code, code_to_term, triee, ngram_depth = 7, si
                                 done[j + k] = 1
                             if to_print == 1:
                                 #  print(temp, ',', nearest, ',', similarity, ',', j, ',', term_to_code[term])
-                                 return(term_to_code[term],similarity)
+                                return(term_to_code[term],similarity)
                             ans[term] = ans.get(term, 0) + 1
-    
 
     #     # Rest of the code decides what to do in case a term belongs to 2 codes
     #     final = {}
@@ -192,7 +190,6 @@ def get_codes_class(text, term_to_code, code_to_term, triee, ngram_depth = 7, si
     # except:
     #     return ("", {})
 
-
 # Initialize data structures
 def initialize():
 
@@ -202,16 +199,18 @@ def initialize():
 
     # A map from ACM Classification Terms to their corresponding codes
     term_to_code = pickle.load(open('data/term_to_code.pickle', 'rb'))
+    jel_term_to_code = pickle.load(open('data/jel_term_to_code.pk', 'rb'))
+    jel_code_to_term = pickle.load(open('data/jel_code_to_term.pk', 'rb'))
 
     # Convert the map term_to_code to a trie
-    trie = get_trie(term_to_code)
+    acm_trie = get_trie(term_to_code)
+    jel_trie = get_trie(jel_term_to_code)
 
-    return term_to_code, code_to_term, trie
-
+    return term_to_code, code_to_term, acm_trie, jel_term_to_code, jel_code_to_term, jel_trie
 
 # - main processing
 
-term_to_code, code_to_term, trie = initialize()
+term_to_code, code_to_term, acm_trie, jel_term_to_code, jel_code_to_term, jel_trie = initialize()
 #print (term_to_code)
 
 # text_list = ['general architecture', 'quality assurance', 'artificial intelligence', 'miscellaneous', 'systems', 'insurance',
@@ -233,17 +232,27 @@ def index():
 def getValue():
     it=request.form["inputtext"]
     th=request.form["threshold"]
-    print(it)
-    print(th)
-    code = get_codes_class(it, term_to_code, code_to_term, trie, 7, th, 1)
+    val = None
+    try:
+        val = request.form["tree"]
+    except:
+        val = None
+ 
+    print('it : ', it)
+    print('th : ', th)
+    print('val : ', val)
+    print('HERE')
+
+    if val == 'acm':
+        code = get_codes_class(it, term_to_code, code_to_term, acm_trie, 7, th, 1)
+    elif val == 'jel':
+        code = get_codes_class(it, jel_term_to_code, jel_code_to_term, jel_trie, 7, th, 1)
+    
     # print(code)
     if code != None:
         return(render_template("pass.html",term=code[0], score=code[1], closest ="Closest"))
     else: 
         return(render_template("pass.html",term="Not matching",score=0, closest ="Not Closest"))
-
-
-
 
 
 #print (code_to_term)

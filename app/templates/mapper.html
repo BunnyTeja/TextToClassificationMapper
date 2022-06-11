@@ -35,7 +35,7 @@ h2 {
 
 <h1 class=" centerv">Text to Classification Mapper</h1>
 <form name ="map" action="." method ="post">
-  
+  <div>  
     <input type="text" name="inputtext" value="artificial intelligence">
     <h3>Enter text here</h3>
     <br><br>
@@ -43,11 +43,15 @@ h2 {
     <h3>Enter matching threshold</h3>
     <br><br>
     <h3>Select Tree for Classification</h3>
-    <input type="radio" id="html" name="tree" value="ACM" checked >
-    <label for="html">ACM</label><br>
+    <select name="tree" id="tree">
+    <option selected disabled>Choose Tree</option>
+    <option value="acm">ACM</option>
+    <option value="jel">JEL</option>
+    </select>
     <br><br>
     <input type="submit" value="Find Concepts"> 
-    </form>
+  </div>
+</form>
 
 </body>
 </html>
